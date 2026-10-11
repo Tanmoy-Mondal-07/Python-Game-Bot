@@ -1,0 +1,43 @@
+name: Run Clash of Clans Bot
+
+on:
+  schedule:
+    # Runs every 6 hours to restart the bot process
+    - cron: '0 */6 * * *'
+  
+  # Allow manual trigger from Actions tab
+  workflow_dispatch:
+  
+  # Run on push to main branch
+  push:
+    branches:
+      - main
+
+jobs:
+  run-bot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360  # 6 hour timeout
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install opencv-python pyautogui numpy
+      
+      - name: Install system dependencies (for display/automation)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y xvfb python3-tk
+      
+      - name: Run Clash of Clans Bot
+        run: |
+          cd COC_Bot_python
+          python coc.py
